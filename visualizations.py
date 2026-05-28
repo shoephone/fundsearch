@@ -23,7 +23,7 @@ def create_valuation_scatter(plot_df: pd.DataFrame) -> go.Figure:
         y="returnOnEquity", 
         color="sector",
         hover_name="Ticker", 
-        hover_data={"longName": True, "sector": True}
+        hover_data={"longName": True, "sector": False}
     )
     
     fig.update_layout(
@@ -106,15 +106,16 @@ def create_performance_line_chart(df_plot: pd.DataFrame, benchmark_ticker: str, 
     
     return fig
 
-def create_dual_axis_deep_dive(df_shares: pd.DataFrame, df_perf_plot: pd.DataFrame, ticker: str, start_date_str: str) -> go.Figure:
+def create_dual_axis_deep_dive(df_shares: pd.DataFrame, df_perf_plot: pd.DataFrame, ticker: str, start_date_str: str, fund_name: str = "") -> go.Figure:
     """
     Generates a dual-axis chart comparing quarterly shares held (Bar) against cumulative daily returns (Line).
+    If fund_name is not provided, the chart title uses the ticker alone.
     """
     if df_shares.empty or df_perf_plot.empty:
         logging.warning(f"Incomplete data provided to create_dual_axis_deep_dive for {ticker}.")
         return go.Figure()
 
-    logging.info(f"Generating Dual-Axis Deep Dive Chart for {ticker}.")
+    logging.info(f"Generating Dual-Axis Deep Dive Chart for {ticker} ({fund_name}).")
     
     perf_date_col = df_perf_plot.columns[0]
     
@@ -148,8 +149,9 @@ def create_dual_axis_deep_dive(df_shares: pd.DataFrame, df_perf_plot: pd.DataFra
     )
     
     # 3. Layout updates
+    title_text = f"{fund_name} - {ticker}" if fund_name else ticker
     fig.update_layout(
-        title=f"{ticker}: Quarterly Shares vs. Daily Return (Since {start_date_str})",
+        title=f"{title_text}: Quarterly Shares Held vs. Daily Return (Since {start_date_str})",
         template="plotly_white", 
         height=550, 
         hovermode="x unified",
