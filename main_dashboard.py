@@ -183,7 +183,7 @@ try:
                 
                 if not df_deep_dive_perf.empty:
                     df_perf_plot = df_deep_dive_perf.reset_index()
-                    fig_dual = create_dual_axis_deep_dive(df_shares, df_perf_plot, deep_dive_ticker, start_date_str)
+                    fig_dual = create_dual_axis_deep_dive(df_shares, df_perf_plot, deep_dive_ticker, start_date_str, fund_name)
                     st.plotly_chart(fig_dual, use_container_width=True)
                 else:
                     st.warning(f"Insufficient historical price data for {deep_dive_ticker}.")
