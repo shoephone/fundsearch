@@ -48,7 +48,7 @@ st.sidebar.markdown("""
 **Common CIKs:**
 * Appaloosa: `1656456`
 * Pershing Square: `1336528`
-* Baupost Group: `1054420`
+* Bridgewater: `1350694`
 * Causeway Cap: `1165797`
 * Icahn Capital: `1412093`
 * Tiger Global: `1167483`
