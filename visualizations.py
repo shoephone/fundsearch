@@ -149,7 +149,7 @@ def create_dual_axis_deep_dive(df_shares: pd.DataFrame, df_perf_plot: pd.DataFra
     
     # 3. Layout updates
     fig.update_layout(
-        title=f"{ticker}: Quarterly Shares vs. Daily Return (Since {start_date_str})",
+        title=f"{ticker}: {fund_name} Quarterly Shares vs. Daily Return (Since {start_date_str})",
         template="plotly_white", 
         height=550, 
         hovermode="x unified",
