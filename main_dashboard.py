@@ -7,7 +7,6 @@ from data_ingestion import (
     fetch_13f_data, 
     fetch_yf_data, 
     fetch_historical_performance, 
-    fetch_ticker_news
 )
 from analysis_engine import (
     process_ticker_share_history, 
@@ -38,15 +37,11 @@ def cached_yf_data(perf_symbols):
 def cached_historical_performance(symbols, benchmark, period="1y", start_date=None):
     return fetch_historical_performance(symbols, benchmark, period, start_date)
 
-@st.cache_data(show_spinner=False, ttl=3600) # Cache news for 1 hour to stay fresh
-def cached_ticker_news(symbol):
-    return fetch_ticker_news(symbol)
-
 # ==========================================
 # 1. Sidebar Configuration
 # ==========================================
 st.sidebar.header("Portfolio Configuration")
-target_cik = st.sidebar.text_input("Enter Fund CIK", value="1656456")
+target_cik = st.sidebar.text_input("Enter Fund CIK", value="1336528")
 benchmark_ticker = st.sidebar.selectbox("Market Benchmark", options=["SPY", "QQQ", "DIA", "IWM"], index=0)
 
 st.sidebar.markdown("""
@@ -161,10 +156,50 @@ try:
             st.plotly_chart(fig_pb_roe, use_container_width=True)
     else:
         st.warning("Insufficient fundamental data to generate valuation maps.")
+   
+    # ------------------------------------------
+    # Benchmark Performance Comparison
+    # ------------------------------------------
+    st.subheader("Performance vs. Benchmark (Sector View)")
+    
+    # Extract unique sectors from the performance dataframe to use in the dropdown
+    if "sector" in df_perf.columns:
+        available_sectors = sorted(df_perf['sector'].dropna().unique().tolist())
+        selected_sectors = st.multiselect(
+            "Filter holdings by Sector:", 
+            options=available_sectors, 
+            default=available_sectors[:1] if available_sectors else []
+        )
+        
+        if selected_sectors:
+            # Get the list of tickers that belong to the selected sectors
+            filtered_tickers = df_perf[df_perf['sector'].isin(selected_sectors)]['Ticker'].tolist()
+            
+            if filtered_tickers:
+                with st.spinner("Fetching 1-Year historical performance data..."):
+                    # Fetch historical data for filtered tickers
+                    df_sector_perf = cached_historical_performance(filtered_tickers, benchmark_ticker, period="1y")
+                    
+                    if not df_sector_perf.empty:
+                        # Reset index so Date becomes the first column (expected by your viz function)
+                        df_perf_plot = df_sector_perf.reset_index()
+                        
+                        # Generate and display the chart
+                        fig_line = create_performance_line_chart(df_perf_plot, benchmark_ticker, "1 Year")
+                        st.plotly_chart(fig_line, use_container_width=True)
+                    else:
+                        st.warning("Insufficient historical data for the selected tickers.")
+        else:
+            st.info("Please select at least one sector to view the comparison.")
+    else:
+        st.warning("Sector data is not available to filter holdings.")
+        
+    st.divider()
     
     # ------------------------------------------
     # Position Deep Dive
     # ------------------------------------------
+
     st.subheader("Position Deep Dive: Shares vs. Returns")
     deep_dive_ticker = st.selectbox("Select Holding for Deep Dive", options=tickers, index=0)
     
@@ -190,32 +225,6 @@ try:
             else:
                 st.warning(f"No historical shares found for {deep_dive_ticker}.")
 
-            # ------------------------------------------
-            # News Feed
-            # ------------------------------------------
-            st.divider()
-            st.subheader(f"🗞️ Latest News: {deep_dive_ticker}")
-            
-            news_data = cached_ticker_news(deep_dive_ticker)
-            
-            if news_data:
-                for article in news_data[:5]:
-                    content = article.get("content", {})
-                    title = content.get("title", "No Title Available")
-                    publisher = content.get("provider", {}).get("displayName", "Unknown Publisher")
-                    link = content.get("clickThroughUrl", {}).get("url", "#")
-                    pub_date_str = content.get("pubDate")
-                    
-                    try:
-                        date_str = pd.to_datetime(pub_date_str).strftime('%Y-%m-%d %H:%M') if pub_date_str else "Unknown Date"
-                    except Exception:
-                        date_str = pub_date_str
-                    
-                    st.markdown(f"**[{title}]({link})**")
-                    st.caption(f"Published by **{publisher}** on {date_str}")
-                    st.write("") 
-            else:
-                st.info("No recent news articles found for this ticker.")
 
 except Exception as e:
     st.error(f"Failed to load dashboard for CIK '{target_cik}'. Check backend logs.")
