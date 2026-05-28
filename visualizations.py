@@ -23,7 +23,7 @@ def create_valuation_scatter(plot_df: pd.DataFrame) -> go.Figure:
         y="returnOnEquity", 
         color="sector",
         hover_name="Ticker", 
-        hover_data={"longName": True, "sector": False}
+        hover_data={"longName": True, "sector": True}
     )
     
     fig.update_layout(
@@ -149,7 +149,7 @@ def create_dual_axis_deep_dive(df_shares: pd.DataFrame, df_perf_plot: pd.DataFra
     
     # 3. Layout updates
     fig.update_layout(
-        title=f"{ticker}: {fund_name} Quarterly Shares vs. Daily Return (Since {start_date_str})",
+        title=f"{ticker}: Quarterly Shares vs. Daily Return (Since {start_date_str})",
         template="plotly_white", 
         height=550, 
         hovermode="x unified",
