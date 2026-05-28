@@ -67,7 +67,7 @@ def fetch_yf_data(perf_symbols: List[str]) -> pd.DataFrame:
     logging.info(f"Fetching fundamental data for {len(perf_symbols)} tickers...")
     
     metrics = [
-        'longName', 'sector', 'epsCurrentYear', 'trailingPE', 'forwardPE', 
+        'longName', 'sector', 'industry', 'epsCurrentYear', 'trailingPE', 'forwardPE', 
         'returnOnEquity', 'freeCashflow', 'debtToEquity', 'priceToBook', 
         'ebitda', 'ebitdaMargins', 'grossMargins', 'twoHundredDayAverage'
     ]
