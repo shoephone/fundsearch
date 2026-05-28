@@ -132,6 +132,7 @@ try:
             "Ticker": st.column_config.TextColumn("Symbol", width="small"),
             "longName": st.column_config.TextColumn("Company Name", width="medium"),
             "sector": st.column_config.TextColumn("Sector"),
+            "industry": st.column_config.TextColumn("Industry"),
             "trailingPE": st.column_config.NumberColumn("Trailing P/E", format="%.2f"),
             "returnOnEquity": st.column_config.NumberColumn("ROE", format="%.2f"),
         }
@@ -160,29 +161,29 @@ try:
     # ------------------------------------------
     # Benchmark Performance Comparison
     # ------------------------------------------
-    st.subheader("Performance vs. Benchmark (Sector View)")
+    st.subheader("Performance vs. Benchmark (Industry View)")
     
-    # Extract unique sectors from the performance dataframe to use in the dropdown
-    if "sector" in df_perf.columns:
-        available_sectors = sorted(df_perf['sector'].dropna().unique().tolist())
-        selected_sectors = st.multiselect(
-            "Filter holdings by Sector:", 
-            options=available_sectors, 
-            default=available_sectors[:1] if available_sectors else []
+    # Extract unique industries from the performance dataframe to use in the dropdown
+    if "industry" in df_perf.columns:
+        available_industries = sorted(df_perf['industry'].dropna().unique().tolist())
+        selected_industries = st.multiselect(
+            "Filter holdings by Industry:", 
+            options=available_industries, 
+            default=available_industries[:1] if available_industries else []
         )
         
-        if selected_sectors:
-            # Get the list of tickers that belong to the selected sectors
-            filtered_tickers = df_perf[df_perf['sector'].isin(selected_sectors)]['Ticker'].tolist()
+        if selected_industries:
+            # Get the list of tickers that belong to the selected industries
+            filtered_tickers = df_perf[df_perf['industry'].isin(selected_industries)]['Ticker'].tolist()
             
             if filtered_tickers:
                 with st.spinner("Fetching 1-Year historical performance data..."):
                     # Fetch historical data for filtered tickers
-                    df_sector_perf = cached_historical_performance(filtered_tickers, benchmark_ticker, period="1y")
+                    df_industry_perf = cached_historical_performance(filtered_tickers, benchmark_ticker, period="1y")
                     
-                    if not df_sector_perf.empty:
+                    if not df_industry_perf.empty:
                         # Reset index so Date becomes the first column (expected by your viz function)
-                        df_perf_plot = df_sector_perf.reset_index()
+                        df_perf_plot = df_industry_perf.reset_index()
                         
                         # Generate and display the chart
                         fig_line = create_performance_line_chart(df_perf_plot, benchmark_ticker, "1 Year")
@@ -190,9 +191,9 @@ try:
                     else:
                         st.warning("Insufficient historical data for the selected tickers.")
         else:
-            st.info("Please select at least one sector to view the comparison.")
+            st.info("Please select at least one industry to view the comparison.")
     else:
-        st.warning("Sector data is not available to filter holdings.")
+        st.warning("Industry data is not available to filter holdings.")
         
     st.divider()
     
