@@ -47,12 +47,14 @@ benchmark_ticker = st.sidebar.selectbox("Market Benchmark", options=["SPY", "QQQ
 st.sidebar.markdown("""
 **Common CIKs:**
 * Appaloosa: `1656456`
-* Pershing Square: `1336528`
 * Bridgewater: `1350694`
 * Causeway Cap: `1165797`
-* Icahn Capital: `1412093`
-* Tiger Global: `1167483`
 * Coatue: `1135730`
+* Fairfax Financial: `0915191`
+* Pershing Square: `1336528`
+* Punch Card Management: `1631664`
+* Tiger Global: `1167483`
+* Trian Fund Management: `1345471`
 """)
 
 # ==========================================
