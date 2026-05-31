@@ -3,3 +3,4 @@ pandas>=2.0.0
 yfinance>=0.2.36
 plotly>=5.18.0
 edgartools>=3.0.0
+matplotlib
