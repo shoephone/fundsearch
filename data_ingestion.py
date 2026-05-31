@@ -54,6 +54,9 @@ def fetch_13f_data(identifier: str) -> Tuple[pd.DataFrame, List[str], str, pd.Da
         logging.error(f"Failed to fetch 13F data for {identifier}: {e}")
         raise
 
+# ==========================================
+# 2. Market Data Extraction (Yahoo Finance)
+# ==========================================
 
 def fetch_yf_data(perf_symbols: List[str]) -> pd.DataFrame:
     """
@@ -103,38 +106,6 @@ def fetch_yf_data(perf_symbols: List[str]) -> pd.DataFrame:
     df_performance = df_performance.rename(columns={'index': 'Ticker'})
     return df_performance
 
-# ==========================================
-# 2. Market Data Extraction (Yahoo Finance)
-# ==========================================
-
-def fetch_yf_data(perf_symbols: List[str]) -> pd.DataFrame:
-    """
-    Fetches fundamental metrics for a list of ticker symbols.
-    """
-    if not perf_symbols:
-        return pd.DataFrame()
-        
-    logging.info(f"Fetching fundamental data for {len(perf_symbols)} tickers...")
-    
-    metrics = [
-        'longName', 'sector', 'industry', 'epsCurrentYear', 'trailingPE', 'forwardPE', 
-        'returnOnEquity', 'freeCashflow', 'debtToEquity', 'priceToBook', 
-        'ebitda', 'ebitdaMargins', 'grossMargins', 'twoHundredDayAverage'
-    ]
-    
-    perf_data = {}
-    for symb in perf_symbols:
-        try:
-            info = yf.Ticker(symb).info
-            if info:
-                perf_data[symb] = [info.get(metric, pd.NA) for metric in metrics]
-        except Exception as e:
-            logging.warning(f"Could not fetch info for {symb}: {e}")
-            pass 
-            
-    df_performance = pd.DataFrame(perf_data, index=metrics).T.reset_index()
-    df_performance = df_performance.rename(columns={'index': 'Ticker'})
-    return df_performance
 
 def fetch_historical_performance(symbols: List[str], benchmark: str, period: str = "1y", start_date: str = None) -> pd.DataFrame:
     """
@@ -172,6 +143,7 @@ def fetch_historical_performance(symbols: List[str], benchmark: str, period: str
     except Exception as e:
         logging.error(f"Error fetching historical prices: {e}")
         return pd.DataFrame()
+
 
 def fetch_ticker_news(symbol: str) -> List[Dict[str, Any]]:
     """
