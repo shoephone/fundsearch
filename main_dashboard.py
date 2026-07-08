@@ -58,7 +58,7 @@ st.sidebar.markdown("""
 * Tiger Global: `1167483`
 * Trian Fund Management: `1345471`
 * Two Sigma: `1450144`
-* Tudor Investment Corp.: `923093`
+* Tudor Investment Corp: `923093`
 """)
 
 # ==========================================
