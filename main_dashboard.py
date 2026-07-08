@@ -53,7 +53,6 @@ st.sidebar.markdown("""
 * Coatue: `1135730`
 * Fairfax Financial: `0915191`
 * Pershing Square: `1336528`
-* Punch Card Management: `1631664`
 * Renaissance Technologies: `1037389`
 * Tiger Global: `1167483`
 * Trian Fund Management: `1345471`
